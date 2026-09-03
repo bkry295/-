@@ -1,0 +1,26 @@
+name: mainichi
+description: 毎日の小さな一歩を記録する、シンプルな習慣アプリ。
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  shared_preferences: 2.5.3
+  flutter_local_notifications: 19.5.0
+  flutter_timezone: 5.0.1
+  timezone: ^0.10.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

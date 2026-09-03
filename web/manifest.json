@@ -1,0 +1,35 @@
+{
+    "name": "まいにち — 小さな一歩を、毎日に。",
+    "short_name": "まいにち",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#FAFBFD",
+    "theme_color": "#0878ff",
+    "description": "目標を決めて、毎日の実行と積み重ねを記録する習慣アプリ。",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
