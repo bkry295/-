@@ -206,7 +206,7 @@ class _ChartPainter extends CustomPainter {
     final points = List.generate(
       values.length,
       (i) => Offset(
-        days == 1 ? plot.right : plot.left + plot.width * i / (days - 1),
+      days == 1 ? plot.left : plot.left + plot.width * i / (days - 1),
         plot.bottom - plot.height * values[i] / maxY,
       ),
     );
@@ -256,13 +256,13 @@ class _ChartPainter extends CustomPainter {
     for (final index in labels) {
       final date = start.add(Duration(days: index));
       final x = days == 1
-          ? plot.right
+          ? plot.left
           : plot.left + plot.width * index / (days - 1);
       _text(
         canvas,
         '${date.month}/${date.day}',
         Offset(x, plot.bottom + 10),
-        right: index == days - 1,
+        right: days > 1 && index == days - 1,
         center: index != 0 && index != days - 1,
       );
     }
