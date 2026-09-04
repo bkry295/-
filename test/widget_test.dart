@@ -168,6 +168,12 @@ void main() {
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
     expect(find.text('実行の記録'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('実行の記録')).dy,
+      lessThan(tester.getTopLeft(find.text('${now.year}年 ${now.month}月')).dy),
+    );
+    await tester.ensureVisible(find.text('${now.day}').first);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('${now.day}').first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('この日の実行を記録'));

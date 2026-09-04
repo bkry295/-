@@ -85,6 +85,8 @@ class _RecordsScreenState extends State<RecordsScreen> {
       body: PageBody(
         children: [
           const SizedBox(height: 8),
+          ProgressCard(habit: habit, now: widget.now),
+          const SizedBox(height: 20),
           SurfaceCard(
             child: Column(
               children: [
@@ -238,8 +240,6 @@ class _RecordsScreenState extends State<RecordsScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          ProgressCard(habit: habit, now: widget.now),
           const SizedBox(height: 18),
           const Text(
             '連続日数は今日または昨日までの連続した記録です。\n達成率は開始日から今日までの日数に対する実行日数です。',
