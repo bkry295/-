@@ -9,93 +9,104 @@ class ProgressCard extends StatelessWidget {
   final DateTime now;
 
   @override
-  Widget build(BuildContext context) => SurfaceCard(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('実行の記録', style: Theme.of(context).textTheme.titleMedium),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-              decoration: BoxDecoration(
-                color: paleBlue,
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: const Text(
-                '日々の積み重ね',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: blue,
-                  fontWeight: FontWeight.w600,
+  Widget build(BuildContext context) {
+    final window = _ChartWindow(habit, now);
+    return SurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('実行の記録', style: Theme.of(context).textTheme.titleMedium),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                decoration: BoxDecoration(
+                  color: paleBlue,
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: const Text(
+                  '日々の積み重ね',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: blue,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 22),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _Metric(
-                icon: Icons.local_fire_department_outlined,
-                label: '連続',
-                value: habit.streak(now),
-                unit: '日',
-                caption: '連続で実行中',
-              ),
-            ),
-            const _MetricDivider(),
-            Expanded(
-              child: _Metric(
-                icon: Icons.calendar_month_outlined,
-                label: '累計',
-                value: habit.total(now),
-                unit: '回',
-                caption: 'これまでの実行',
-              ),
-            ),
-            const _MetricDivider(),
-            Expanded(
-              child: _Metric(
-                icon: Icons.emoji_events_outlined,
-                label: '達成率',
-                value: habit.rate(now),
-                unit: '%',
-                caption: '開始日から今日',
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 28),
-        Semantics(
-          label: '累計の実行回数 ${habit.total(now)}回。直近30日間の推移。',
-          child: SizedBox(
-            height: 180,
-            width: double.infinity,
-            child: CustomPaint(painter: _ChartPainter(habit, now)),
+            ],
           ),
-        ),
-        const SizedBox(height: 10),
-        const Row(
-          children: [
-            Icon(Icons.circle, size: 8, color: blue),
-            SizedBox(width: 7),
-            Text('実行回数の推移（累計）', style: TextStyle(fontSize: 11, color: muted)),
-          ],
-        ),
-        if (habit.total(now) == 0) ...[
-          const SizedBox(height: 16),
-          const Text(
-            '最初の一歩を、ここから。\n実行を記録するとグラフが育ちます。',
-            style: TextStyle(fontSize: 12, color: muted),
+          const SizedBox(height: 22),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _Metric(
+                  icon: Icons.local_fire_department_outlined,
+                  label: '連続',
+                  value: habit.streak(now),
+                  unit: '日',
+                  caption: '連続で実行中',
+                ),
+              ),
+              const _MetricDivider(),
+              Expanded(
+                child: _Metric(
+                  icon: Icons.calendar_month_outlined,
+                  label: '累計',
+                  value: habit.total(now),
+                  unit: '回',
+                  caption: 'これまでの実行',
+                ),
+              ),
+              const _MetricDivider(),
+              Expanded(
+                child: _Metric(
+                  icon: Icons.emoji_events_outlined,
+                  label: '達成率',
+                  value: habit.rate(now),
+                  unit: '%',
+                  caption: '開始日から今日',
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 28),
+          Semantics(
+            label:
+                '累計の実行回数 ${habit.total(now)}回。表示期間は${window.start.month}月${window.start.day}日から${window.end.month}月${window.end.day}日、実績線は${window.today.month}月${window.today.day}日まで。',
+            child: SizedBox(
+              height: 180,
+              width: double.infinity,
+              child: CustomPaint(painter: _ChartPainter(habit, now)),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Row(
+            children: [
+              Icon(Icons.circle, size: 8, color: blue),
+              SizedBox(width: 7),
+              Text('実行回数の推移（累計）', style: TextStyle(fontSize: 11, color: muted)),
+            ],
+          ),
+          if (window.hasFuture) ...[
+            const SizedBox(height: 7),
+            const Text(
+              '薄い部分は未来の日付です。実績線は今日まで表示します。',
+              style: TextStyle(fontSize: 10, color: muted),
+            ),
+          ],
+          if (habit.total(now) == 0) ...[
+            const SizedBox(height: 16),
+            const Text(
+              '最初の一歩を、ここから。\n実行を記録するとグラフが育ちます。',
+              style: TextStyle(fontSize: 12, color: muted),
+            ),
+          ],
         ],
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }
 
 class _MetricDivider extends StatelessWidget {
@@ -169,9 +180,9 @@ class _ChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final days = math.min(habit.elapsedDays(now), 30);
-    final end = calendarDate(now);
-    final start = end.subtract(Duration(days: days - 1));
+    final window = _ChartWindow(habit, now);
+    final start = window.start;
+    final days = window.observedDays;
     final completed = habit.completedDates.toList()..sort();
     var count = completed
         .where((key) => key.compareTo(dateKey(start)) < 0)
@@ -183,6 +194,18 @@ class _ChartPainter extends CustomPainter {
     }
     final maxY = math.max(4, (habit.total(now) / 4).ceil() * 4);
     final plot = Rect.fromLTRB(27, 9, size.width - 7, size.height - 27);
+    final todayX =
+        plot.left + plot.width * (days - 1) / (_ChartWindow.axisDays - 1);
+    if (days < _ChartWindow.axisDays) {
+      final futureStart = math.min(
+        plot.right,
+        todayX + plot.width / ((_ChartWindow.axisDays - 1) * 2),
+      );
+      canvas.drawRect(
+        Rect.fromLTRB(futureStart, plot.top, plot.right, plot.bottom),
+        Paint()..color = const Color(0xFFF5F7FA),
+      );
+    }
     final gridPaint = Paint()
       ..color = border
       ..strokeWidth = 1;
@@ -206,7 +229,7 @@ class _ChartPainter extends CustomPainter {
     final points = List.generate(
       values.length,
       (i) => Offset(
-      days == 1 ? plot.left : plot.left + plot.width * i / (days - 1),
+        plot.left + plot.width * i / (_ChartWindow.axisDays - 1),
         plot.bottom - plot.height * values[i] / maxY,
       ),
     );
@@ -216,7 +239,7 @@ class _ChartPainter extends CustomPainter {
     }
     if (points.length > 1) {
       final area = Path.from(line)
-        ..lineTo(plot.right, plot.bottom)
+        ..lineTo(points.last.dx, plot.bottom)
         ..lineTo(plot.left, plot.bottom)
         ..close();
       canvas.drawPath(
@@ -250,20 +273,16 @@ class _ChartPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.2,
     );
-    final labels = days == 1
-        ? [0]
-        : <int>{0, (days - 1) ~/ 2, days - 1}.toList();
+    const labels = [0, 14, 29];
     for (final index in labels) {
       final date = start.add(Duration(days: index));
-      final x = days == 1
-          ? plot.left
-          : plot.left + plot.width * index / (days - 1);
+      final x = plot.left + plot.width * index / (_ChartWindow.axisDays - 1);
       _text(
         canvas,
         '${date.month}/${date.day}',
         Offset(x, plot.bottom + 10),
-        right: days > 1 && index == days - 1,
-        center: index != 0 && index != days - 1,
+        right: index == _ChartWindow.axisDays - 1,
+        center: index != 0 && index != _ChartWindow.axisDays - 1,
       );
     }
   }
@@ -298,4 +317,19 @@ class _ChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _ChartPainter oldDelegate) =>
       oldDelegate.habit != habit || dateKey(oldDelegate.now) != dateKey(now);
+}
+
+class _ChartWindow {
+  _ChartWindow(Habit habit, DateTime now)
+    : today = calendarDate(now),
+      start = habit.elapsedDays(now) <= axisDays
+          ? calendarDate(habit.startedAt)
+          : calendarDate(now).subtract(const Duration(days: axisDays - 1));
+
+  static const axisDays = 30;
+  final DateTime today;
+  final DateTime start;
+  DateTime get end => start.add(const Duration(days: axisDays - 1));
+  int get observedDays => today.difference(start).inDays + 1;
+  bool get hasFuture => observedDays < axisDays;
 }
