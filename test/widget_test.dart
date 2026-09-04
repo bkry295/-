@@ -122,7 +122,7 @@ void main() {
     await tester.tap(find.text('この内容ではじめる'));
     await tester.pumpAndSettle();
     expect(repository.habit!.action, '英単語を10個覚える');
-    await tester.tap(find.text('今日の実行を完了'));
+    await tester.tap(find.text('中央をタップして記録'));
     await tester.pumpAndSettle();
     expect(repository.habit!.total(DateTime.now()), 1);
     expect(find.text('今日もできました！'), findsOneWidget);
@@ -137,7 +137,7 @@ void main() {
     await tester.tap(find.text('取り消す'));
     await tester.pumpAndSettle();
     expect(repository.habit!.total(DateTime.now()), 0);
-    expect(find.text('今日の実行を完了'), findsOneWidget);
+    expect(find.text('中央をタップして記録'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
@@ -183,13 +183,13 @@ void main() {
       ..habit = sampleHabit()
       ..failSave = true;
     await openApp(tester, repository);
-    await tester.tap(find.text('今日の実行を完了'));
+    await tester.tap(find.text('中央をタップして記録'));
     await tester.pumpAndSettle();
     expect(repository.habit!.completedDates, isEmpty);
     expect(find.textContaining('保存できませんでした'), findsOneWidget);
-    expect(find.text('今日の実行を完了'), findsOneWidget);
+    expect(find.text('中央をタップして記録'), findsOneWidget);
     repository.failSave = false;
-    await tester.tap(find.text('今日の実行を完了'));
+    await tester.tap(find.text('中央をタップして記録'));
     await tester.pumpAndSettle();
     expect(repository.habit!.completedDates.length, 1);
     await tester.pumpWidget(const SizedBox.shrink());
@@ -205,7 +205,7 @@ void main() {
     repository.failLoad = false;
     await tester.tap(find.text('再読み込み'));
     await tester.pumpAndSettle();
-    expect(find.text('今日の実行を完了'), findsOneWidget);
+    expect(find.text('中央をタップして記録'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
