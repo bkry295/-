@@ -251,7 +251,6 @@ class _HabitHomeState extends State<_HabitHome> with WidgetsBindingObserver {
             now: _now,
             busy: _busy,
             onComplete: _completeToday,
-            onEdit: () => setState(() => _tab = 2),
           ),
           1 => RecordsScreen(
             habit: habit,

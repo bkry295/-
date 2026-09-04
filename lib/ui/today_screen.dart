@@ -10,28 +10,17 @@ class TodayScreen extends StatelessWidget {
     required this.now,
     required this.busy,
     required this.onComplete,
-    required this.onEdit,
   });
   final Habit habit;
   final DateTime now;
   final bool busy;
-  final VoidCallback onComplete, onEdit;
+  final VoidCallback onComplete;
 
   @override
   Widget build(BuildContext context) {
     final done = habit.isDone(now);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('今日のやること'),
-        actions: [
-          IconButton(
-            tooltip: '目標・やることを編集',
-            onPressed: onEdit,
-            icon: const Icon(Icons.edit_outlined, color: blue),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      appBar: AppBar(title: const Text('今日のやること')),
       body: PageBody(
         children: [
           Padding(
