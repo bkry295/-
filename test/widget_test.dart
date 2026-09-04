@@ -164,8 +164,10 @@ void main() {
       );
     await openApp(tester, repository, size: const Size(320, 568));
     expect(tester.takeException(), isNull);
+    expect(find.text('実行の記録'), findsNothing);
     await tester.tap(find.text('記録'));
     await tester.pumpAndSettle();
+    expect(find.text('実行の記録'), findsOneWidget);
     await tester.tap(find.text('${now.day}').first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('この日の実行を記録'));

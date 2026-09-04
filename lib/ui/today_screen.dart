@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/habit.dart';
-import 'progress_card.dart';
 import 'theme.dart';
 
 class TodayScreen extends StatelessWidget {
@@ -135,8 +134,6 @@ class TodayScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          ProgressCard(habit: habit, now: now),
           const SizedBox(height: 21),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
