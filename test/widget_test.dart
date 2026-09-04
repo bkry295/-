@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mainichi/app.dart';
 import 'package:mainichi/models/habit.dart';
 import 'package:mainichi/services/habit_repository.dart';
 import 'package:mainichi/services/reminders.dart';
+import 'package:mainichi/ui/records_screen.dart';
+import 'package:mainichi/ui/theme.dart';
 
 class MemoryRepository implements HabitRepository {
   Habit? habit;
@@ -56,6 +59,52 @@ Habit sampleHabit() => Habit(
 );
 
 void main() {
+  testWidgets('consecutive calendar days render as one connected segment', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final today = DateTime.utc(2026, 9, 5);
+    final habit = Habit(
+      goal: '目標',
+      action: '毎日の行動',
+      startedAt: DateTime.utc(2026, 9, 1),
+      completedDates: {'2026-09-01', '2026-09-02', '2026-09-03', '2026-09-04'},
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ja'),
+        supportedLocales: const [Locale('ja')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        theme: appTheme(),
+        home: RecordsScreen(
+          habit: habit,
+          now: today,
+          busy: false,
+          onToggle: (_) async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    BorderRadius radiusFor(int day) {
+      final container = tester.widget<Container>(
+        find.byKey(
+          ValueKey('calendar-day-2026-09-${day.toString().padLeft(2, '0')}'),
+        ),
+      );
+      return (container.decoration! as BoxDecoration).borderRadius!
+          as BorderRadius;
+    }
+
+    expect(radiusFor(1).topLeft.x, 12);
+    expect(radiusFor(1).topRight.x, 0);
+    expect(radiusFor(2).topLeft.x, 0);
+    expect(radiusFor(2).topRight.x, 0);
+    expect(radiusFor(4).topLeft.x, 0);
+    expect(radiusFor(4).topRight.x, 12);
+  });
+
   testWidgets('onboarding, completion, reload, and undo persist correctly', (
     tester,
   ) async {
@@ -113,7 +162,7 @@ void main() {
       expect(find.text('毎日 21:30 に通知'), findsOneWidget);
       await tester.tap(find.text('記録'));
       await tester.pumpAndSettle();
-    expect(find.text('実行回数の推移（累計）'), findsNothing);
+      expect(find.text('実行回数の推移（累計）'), findsNothing);
       expect(find.text('日付をタップして編集'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());

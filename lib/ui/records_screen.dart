@@ -151,7 +151,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 7,
                     mainAxisSpacing: 5,
-                    crossAxisSpacing: 3,
+                    crossAxisSpacing: 0,
                   ),
                   itemCount: cellCount,
                   itemBuilder: (context, index) {
@@ -169,6 +169,18 @@ class _RecordsScreenState extends State<RecordsScreen> {
                         !day.isAfter(calendarDate(widget.now));
                     final done = habit.isDone(day);
                     final today = dateKey(day) == dateKey(widget.now);
+                    final connectsToPrevious =
+                        done &&
+                        day.weekday != DateTime.sunday &&
+                        habit.isDone(day.subtract(const Duration(days: 1)));
+                    final connectsToNext =
+                        done &&
+                        day.weekday != DateTime.saturday &&
+                        habit.isDone(day.add(const Duration(days: 1)));
+                    final dayRadius = BorderRadius.horizontal(
+                      left: Radius.circular(connectsToPrevious ? 0 : 12),
+                      right: Radius.circular(connectsToNext ? 0 : 12),
+                    );
                     return Semantics(
                       label:
                           '${_month.month}月$dayNumber日 ${done ? '実行済み' : '未記録'}',
@@ -177,8 +189,9 @@ class _RecordsScreenState extends State<RecordsScreen> {
                         onTap: enabled && !widget.busy
                             ? () => _selectDay(day)
                             : null,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: dayRadius,
                         child: Container(
+                          key: ValueKey('calendar-day-${dateKey(day)}'),
                           decoration: BoxDecoration(
                             color: done
                                 ? blue
@@ -188,7 +201,7 @@ class _RecordsScreenState extends State<RecordsScreen> {
                             border: today
                                 ? Border.all(color: blue, width: 1.3)
                                 : null,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: dayRadius,
                           ),
                           child: Center(
                             child: Text(
