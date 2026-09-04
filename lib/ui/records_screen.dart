@@ -171,12 +171,9 @@ class _RecordsScreenState extends State<RecordsScreen> {
                     final today = dateKey(day) == dateKey(widget.now);
                     final connectsToPrevious =
                         done &&
-                        day.weekday != DateTime.sunday &&
                         habit.isDone(day.subtract(const Duration(days: 1)));
                     final connectsToNext =
-                        done &&
-                        day.weekday != DateTime.saturday &&
-                        habit.isDone(day.add(const Duration(days: 1)));
+                        done && habit.isDone(day.add(const Duration(days: 1)));
                     final dayRadius = BorderRadius.horizontal(
                       left: Radius.circular(connectsToPrevious ? 0 : 12),
                       right: Radius.circular(connectsToNext ? 0 : 12),

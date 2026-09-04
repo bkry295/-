@@ -64,12 +64,15 @@ void main() {
   ) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final today = DateTime.utc(2026, 9, 5);
+    final today = DateTime.utc(2026, 9, 15);
     final habit = Habit(
       goal: '目標',
       action: '毎日の行動',
       startedAt: DateTime.utc(2026, 9, 1),
-      completedDates: {'2026-09-01', '2026-09-02', '2026-09-03', '2026-09-04'},
+      completedDates: {
+        for (var day = 1; day <= 15; day++)
+          '2026-09-${day.toString().padLeft(2, '0')}',
+      },
     );
     await tester.pumpWidget(
       MaterialApp(
@@ -101,8 +104,12 @@ void main() {
     expect(radiusFor(1).topRight.x, 0);
     expect(radiusFor(2).topLeft.x, 0);
     expect(radiusFor(2).topRight.x, 0);
-    expect(radiusFor(4).topLeft.x, 0);
-    expect(radiusFor(4).topRight.x, 12);
+    expect(radiusFor(5).topRight.x, 0);
+    expect(radiusFor(6).topLeft.x, 0);
+    expect(radiusFor(12).topRight.x, 0);
+    expect(radiusFor(13).topLeft.x, 0);
+    expect(radiusFor(15).topLeft.x, 0);
+    expect(radiusFor(15).topRight.x, 12);
   });
 
   testWidgets('onboarding, completion, reload, and undo persist correctly', (
