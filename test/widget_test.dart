@@ -113,7 +113,7 @@ void main() {
       expect(find.text('毎日 21:30 に通知'), findsOneWidget);
       await tester.tap(find.text('記録'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('薄い部分は未来の日付です'), findsOneWidget);
+    expect(find.text('実行回数の推移（累計）'), findsNothing);
       expect(find.text('日付をタップして編集'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
